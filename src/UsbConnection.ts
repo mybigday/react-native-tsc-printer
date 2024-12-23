@@ -9,6 +9,7 @@ import { ConnectionType } from './types';
 export interface UsbDevice extends Device {
   vendorId?: number;
   productId?: number;
+  serialNumber: string;
 }
 
 class UsbConnection extends EventEmitter {

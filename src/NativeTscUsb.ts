@@ -6,6 +6,7 @@ type UsbDevice = {
   productId?: number;
   name: string;
   target: string;
+  serialNumber: string;
 };
 
 export interface Spec extends TurboModule {

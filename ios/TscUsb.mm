@@ -29,22 +29,17 @@ RCT_EXPORT_MODULE()
     if (deviceId == -1) {
         return;
     }
-    switch (eventCode) {
-        case NSStreamEventHasBytesAvailable:
-            uint8_t buffer[BUFFER_SIZE];
-            NSInteger bytesRead = [stream read:buffer maxLength:sizeof(buffer)];
-            NSData *data = [NSData dataWithBytes:buffer length:bytesRead];
-            NSString *base64Data = [data base64EncodedStringWithOptions:0];
-            [self sendEventWithName:@"data" body:@{@"id": @(deviceId), @"data": base64Data}];
-            break;
-        case NSStreamEventErrorOccurred:
-            [self sendEventWithName:@"error" body:@{@"id": @(deviceId), @"error": stream.streamError.localizedDescription}];
-            break;
-        case NSStreamEventEndEncountered:
-            [self sendEventWithName:@"disconnected" body:@{@"id": @(deviceId)}];
-            break;
-        default:
-            break;
+    if (eventCode == NSStreamEventHasBytesAvailable) {
+        NSInputStream *inputStream = (NSInputStream *)stream;
+        uint8_t buffer[BUFFER_SIZE];
+        NSInteger bytesRead = [inputStream read:buffer maxLength:sizeof(buffer)];
+        NSData *data = [NSData dataWithBytes:buffer length:bytesRead];
+        NSString *base64Data = [data base64EncodedStringWithOptions:0];
+        [self sendEventWithName:@"data" body:@{@"id": @(deviceId), @"data": base64Data}];
+    } else if (eventCode == NSStreamEventErrorOccurred) {
+        [self sendEventWithName:@"error" body:@{@"id": @(deviceId), @"error": stream.streamError.localizedDescription}];
+    } else if (eventCode == NSStreamEventEndEncountered) {
+        [self sendEventWithName:@"disconnected" body:@{@"id": @(deviceId)}];
     }
 }
 
@@ -62,24 +57,27 @@ RCT_EXPORT_MODULE()
     EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
     NSArray *accessories = [accessoryManager connectedAccessories];
     NSArray *filteredAccessories = [accessories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"vendorID == %@", @(0x1203)]];
-    NSArray *result = [filteredAccessories map:^id(EAAccessory *accessory) {
-        return @{
+    NSMutableArray *results = [NSMutableArray new];
+    for (EAAccessory *accessory in filteredAccessories) {
+        [results addObject:@{
             @"name": accessory.name,
-            @"target": accessory.protocolStrings[0]
-        };
-    }];
-    resolve(result);
+            @"target": accessory.serialNumber,
+            @"serialNumber": accessory.serialNumber,
+        }];
+    }
+    resolve(results);
 }
 
 - (void)connect: (NSString *)target resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
-    // connect MFi
     EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
-    EAAccessory *accessory = [accessoryManager accessoryWithProtocolString:target];
+    NSArray *accessories = [accessoryManager connectedAccessories];
+    NSArray *filteredAccessories = [accessories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"serialNumber == %@", target]];
+    EAAccessory *accessory = [filteredAccessories firstObject];
     if (!accessory) {
         reject(@"E_ACCESSORY_NOT_FOUND", @"Accessory not found", nil);
         return;
     }
-    EASession *session = [[EASession alloc] initWithAccessory:accessory forProtocol:target];
+    EASession *session = [[EASession alloc] initWithAccessory:accessory forProtocol:@"com.issc.datapath"];
     if (!session) {
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
         return;

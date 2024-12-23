@@ -1,6 +1,6 @@
 import type { NativeEventSubscription } from 'react-native';
 import type { Buffer } from 'buffer';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'tseep';
 import { getEventEmitter } from './EventEmitters';
 import BlueApi from './NativeTscBlue';
 import type { Device } from './types';

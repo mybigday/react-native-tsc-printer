@@ -1,7 +1,7 @@
 import net from 'react-native-tcp-socket';
 import UsbConnection from './UsbConnection';
 import BlueConnection from './BlueConnection';
-import { BARCODE_DEFAULT_WIDE } from './constants';
+import { BARCODE_DEFAULT_WIDE, STATUS_MAP } from './constants';
 import {
   ConnectionType,
   SensorType,
@@ -15,6 +15,8 @@ import {
 } from './types';
 import type { Device } from './types';
 import { buildCommand, quote } from './utils';
+import { Buffer } from 'buffer';
+import type { EventEmitter } from 'events';
 
 export * from './types';
 
@@ -56,10 +58,11 @@ class Printer {
         return new Printer(type, await UsbConnection.connect(target));
       case ConnectionType.NET: {
         return new Promise((resolve, reject) => {
-          const socket = net.createConnection(
+          const [host, port] = target.split(':');
+          const socket = net.connect(
             {
-              host: target,
-              port: 9100,
+              host,
+              port: Number(port),
             },
             () => {
               resolve(new Printer(type, socket));
@@ -90,12 +93,12 @@ class Printer {
     }
   }
 
-  async receive(timeout: number = 100): Promise<string> {
+  async receive(timeout: number = 100): Promise<string | Buffer> {
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => reject(new Error('Timeout')), timeout);
-      this._connection.on('data', (data) => {
+      (this._connection! as EventEmitter).once('data', (data) => {
         clearTimeout(timeoutId);
-        resolve(data.toString());
+        resolve(data);
       });
     });
   }
@@ -335,33 +338,29 @@ class Printer {
   }
 
   async getStatus(): Promise<string> {
-    await this.sendCommand(Buffer.from([27, 33, 83]));
-    return await this.receive();
-  }
-
-  async getStatusByte(): Promise<Buffer> {
     await this.sendCommand(Buffer.from([27, 33, 63]));
-    return Buffer.from(await this.receive());
+    const status = await this.receive();
+    return STATUS_MAP[status.toString()] ?? 'Unknown';
   }
 
   async getPrinterName(): Promise<string> {
     await this.sendCommand('~!T');
-    return await this.receive();
+    return (await this.receive()).toString();
   }
 
   async getPrinterMemory(): Promise<string> {
     await this.sendCommand('~!A');
-    return await this.receive();
+    return (await this.receive()).toString();
   }
 
   async getPrinterMileage(): Promise<string> {
     await this.sendCommand('~!@');
-    return await this.receive();
+    return (await this.receive()).toString();
   }
 
   async getPrinterCodepage(): Promise<string> {
     await this.sendCommand('~!I');
-    return await this.receive();
+    return (await this.receive()).toString();
   }
 }
 

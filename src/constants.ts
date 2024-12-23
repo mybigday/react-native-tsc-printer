@@ -31,3 +31,21 @@ export const BARCODE_DEFAULT_WIDE = {
   [BarcodeType.EAN14]: 1,
   [BarcodeType.Code11]: 3,
 };
+
+export const STATUS_MAP: Record<string, string> = {
+  '\x00': 'Normal',
+  '\x01': 'Head opened',
+  '\x02': 'Paper Jam',
+  '\x03': 'Paper Jam and head opened',
+  '\x04': 'Out of paper',
+  '\x05': 'Out of paper and head opened',
+  '\x08': 'Out of ribbon',
+  '\x09': 'Out of ribbon and head opened',
+  '\x0A': 'Out of ribbon and paper jam',
+  '\x0B': 'Out of ribbon, paper jam and head opened',
+  '\x0C': 'Out of ribbon and out of paper',
+  '\x0D': 'Out of ribbon, out of paper and head opened',
+  '\x10': 'Pause',
+  '\x20': 'Printing',
+  '\x80': 'Other error',
+};

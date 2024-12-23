@@ -1,6 +1,6 @@
 import type { NativeEventSubscription } from 'react-native';
 import type { Buffer } from 'buffer';
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'tseep';
 import { getEventEmitter } from './EventEmitters';
 import UsbApi from './NativeTscUsb';
 import type { Device } from './types';

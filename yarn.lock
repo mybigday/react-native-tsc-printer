@@ -10635,6 +10635,7 @@ __metadata:
     react-native-builder-bob: ^0.32.0
     react-native-tcp-socket: ^6.2.0
     release-it: ^17.10.0
+    tseep: ^1.3.1
     turbo: ^1.10.7
     typescript: ^5.2.2
   peerDependencies:
@@ -12156,6 +12157,13 @@ __metadata:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: fde256c9073969e234526e2cfead42591b9a2aec5222bac154b0de2fa9e4ceb30efcd717ee8bc785a56f3a119bdd5aa27b333d9dbec94ed254bd26f8944c67ac
+  languageName: node
+  linkType: hard
+
+"tseep@npm:^1.3.1":
+  version: 1.3.1
+  resolution: "tseep@npm:1.3.1"
+  checksum: 55de69fe1244de4b4dc0bd28a139543c5ca702ee670695a31801ab22e547d47e98ff61af3a05398858fc477720a0ba9b9e8a7a1ed913e4050d7680a2e9d47827
   languageName: node
   linkType: hard
 

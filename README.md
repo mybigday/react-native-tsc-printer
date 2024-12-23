@@ -12,11 +12,14 @@ npm install react-native-tsc-printer
 
 
 ```js
-import { multiply } from 'react-native-tsc-printer';
+import Printer, { ConnectionType } from 'react-native-tsc-printer';
 
 // ...
 
-const result = multiply(3, 7);
+const printer = await Printer.connect(ConnectionType.USB, '1234567890');
+
+await printer.addText(0, 0, 'Hello, world!');
+await printer.print();
 ```
 
 

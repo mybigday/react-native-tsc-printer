@@ -15,7 +15,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)supportedEvents
 {
-  return @[ @"deviceFound", @"connected", @"disconnected", @"data" ];
+  return @[ @"bluetoothEnabled", @"bluetoothDisabled", @"deviceFound", @"connected", @"disconnected", @"data" ];
 }
 
 - (instancetype)init {

@@ -13,7 +13,7 @@ RCT_EXPORT_MODULE()
 
 - (NSArray *)supportedEvents
 {
-  return @[ @"deviceFound", @"connected", @"disconnected", @"data", @"error" ];
+  return @[ @"disconnected", @"data", @"error" ];
 }
 
 - (instancetype)init {

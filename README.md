@@ -8,6 +8,32 @@ TSC printer module for React Native
 npm install react-native-tsc-printer
 ```
 
+## Android
+
+Add the following to your `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.BLUETOOTH"/>
+<uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+```
+
+## iOS
+
+Add the following to your `Info.plist`:
+
+```xml
+<key>NSBluetoothAlwaysUsageDescription</key>
+<string>Need bluetooth access for printing</string>
+<key>NSBluetoothPeripheralUsageDescription</key>
+<string>Need bluetooth access for printing</string>
+<key>UISupportedExternalAccessoryProtocols</key>
+<array>
+    <string>com.issc.datapath</string>
+</array>
+```
+
 ## Usage
 
 

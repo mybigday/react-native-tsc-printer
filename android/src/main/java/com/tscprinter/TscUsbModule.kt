@@ -83,7 +83,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
             override fun onReceive(context: Context, intent: Intent) {
               if (ACTION_USB_PERMISSION == intent.action) {
                 synchronized(this) {
-                  val permittedDevice: UsbDevice? = intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                  val permittedDevice: UsbDevice? = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
                   if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
                     permittedDevice?.let {
                       val connection = usbManager.openDevice(it)

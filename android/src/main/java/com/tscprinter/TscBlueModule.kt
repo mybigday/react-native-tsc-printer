@@ -11,6 +11,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
 import android.bluetooth.BluetoothServerSocket
+import android.bluetooth.BluetoothManager
 import android.bluetooth.le.ScanCallback
 import android.util.Base64
 import android.bluetooth.BluetoothGatt
@@ -26,7 +27,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
   private val nextId = AtomicInteger(0)
   private val devices = mutableMapOf<Int, BluetoothSocket>()
 
-  private val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+  private val bluetoothAdapter: BluetoothAdapter?
 
   private var scanning = false
 
@@ -34,7 +35,16 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
     return NAME
   }
 
+  init {
+    val bluetoothManager = reactContext.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+    bluetoothAdapter = bluetoothManager.adapter
+  }
+
   override fun scanDevices(timeout: Double, promise: Promise) {
+    if (bluetoothAdapter == null) {
+      promise.reject(Exception("Bluetooth adapter not found"))
+      return
+    }
     if (!bluetoothAdapter.isEnabled) {
       promise.reject(Exception("Bluetooth is not enabled"))
       return
@@ -71,6 +81,14 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
   }
 
   override fun connect(target: String, promise: Promise) {
+    if (bluetoothAdapter == null) {
+      promise.reject(Exception("Bluetooth adapter not found"))
+      return
+    }
+    if (!bluetoothAdapter.isEnabled) {
+      promise.reject(Exception("Bluetooth is not enabled"))
+      return
+    }
     Thread {
       try {
         val serviceUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb")

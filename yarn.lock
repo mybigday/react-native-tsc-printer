@@ -10608,6 +10608,7 @@ __metadata:
     react: 18.3.1
     react-native: 0.76.5
     react-native-builder-bob: ^0.32.0
+    react-native-tcp-socket: ^6.2.0
   languageName: unknown
   linkType: soft
 

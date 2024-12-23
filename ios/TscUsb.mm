@@ -83,7 +83,7 @@ RCT_EXPORT_MODULE()
         return;
     }
     NSInteger deviceId = _nextId++;
-    _sessions[deviceId] = session;
+    _sessions[@(deviceId)] = session;
     [session.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [session.outputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [session.inputStream open];
@@ -98,9 +98,10 @@ RCT_EXPORT_MODULE()
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
         return;
     }
+    [session.inputStream close];
+    [session.outputStream close];
     [session.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     [session.outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-    [session.accessory disconnect];
     [_sessions removeObjectForKey:@(deviceId)];
     resolve(nil);
 }

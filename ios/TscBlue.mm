@@ -95,7 +95,7 @@ RCT_EXPORT_MODULE()
         return;
     }
     
-    NSData *data = [command dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:command options:0];
     [peripheral writeValue:data forCharacteristic:characteristic type:CBCharacteristicWriteWithResponse];
     resolve(nil);
 }
@@ -110,7 +110,6 @@ RCT_EXPORT_MODULE()
     }
     
     [peripheral readValueForCharacteristic:characteristic];
-    // 實際的數據會在 didUpdateValueForCharacteristic 中處理
     resolve(nil);
 }
 
@@ -167,8 +166,8 @@ RCT_EXPORT_MODULE()
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error {
     NSNumber *deviceId = [self findDeviceId:peripheral];
     if (!deviceId) return;
-    
-    NSString *value = [[NSString alloc] initWithData:characteristic.value encoding:NSUTF8StringEncoding];
+
+    NSString *value = [characteristic.value base64EncodedStringWithOptions:0];
     [self sendEventWithName:@"data" body:@{
         @"id": deviceId,
         @"data": value ?: @"",

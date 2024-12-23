@@ -112,8 +112,13 @@ RCT_EXPORT_MODULE()
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
         return;
     }
-    NSData *data = [command dataUsingEncoding:NSUTF8StringEncoding];
-    [session.outputStream write:data.bytes maxLength:data.length];
+    NSData *data = [[NSData alloc] initWithBase64EncodedString:command options:0];
+    uint8_t *buffer = (uint8_t *)data.bytes;
+    NSInteger bytesWritten = [session.outputStream write:buffer maxLength:data.length];
+    if (bytesWritten < 0) {
+        reject(@"E_WRITE_ERROR", @"Failed to write to device", nil);
+        return;
+    }
     resolve(nil);
 }
 

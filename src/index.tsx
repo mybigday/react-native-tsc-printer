@@ -112,8 +112,12 @@ class Printer {
         await (this._connection as UsbConnection).send(command);
         break;
       case ConnectionType.NET:
-        await (this._connection as net.Socket).write(command);
-        break;
+        return new Promise((resolve, reject) => {
+          (this._connection as net.Socket).write(command, 'binary', (err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
       case ConnectionType.BLUETOOTH:
         await (this._connection as BlueConnection).send(command);
         break;

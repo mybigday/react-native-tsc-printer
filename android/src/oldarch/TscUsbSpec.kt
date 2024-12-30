@@ -12,4 +12,7 @@ abstract class TscUsbSpec internal constructor(context: ReactApplicationContext)
   abstract fun disconnect(deviceId: Double, promise: Promise)
   abstract fun read(deviceId: Double, promise: Promise)
   abstract fun send(deviceId: Double, data: String, promise: Promise)
+
+  abstract fun addListener(eventName: String)
+  abstract fun removeListeners(count: Double)
 }

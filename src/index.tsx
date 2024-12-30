@@ -1,6 +1,7 @@
 import net from 'react-native-tcp-socket';
 import UsbConnection from './UsbConnection';
 import BlueConnection from './BlueConnection';
+import Common from './NativeTscCommon';
 import { BARCODE_DEFAULT_WIDE, STATUS_MAP } from './constants';
 import {
   ConnectionType,
@@ -314,6 +315,17 @@ class Printer {
 
   async noBackfeed(): Promise<void> {
     return this.sendCommand(buildCommand('SET TEAR OFF'));
+  }
+
+  async addImage(
+    x: number,
+    y: number,
+    uri: string,
+    width: number = 0,
+    height: number = 0
+  ): Promise<void> {
+    const data = await Common.loadImage(uri, width, height);
+    return this.addBitmap(x, y, width, height, new Uint8Array(data));
   }
 
   async addBitmap(

@@ -28,7 +28,7 @@ class TscCommonModule(reactContext: ReactApplicationContext) :
     try {
       val url = URL(uri)
       val bitmap = BitmapFactory.decodeStream(url.openStream())
-      val resizedBitmap = if (width == 0 || height == 0) {
+      val resizedBitmap = if (width == 0.0 || height == 0.0) {
         bitmap
       } else {
         Bitmap.createScaledBitmap(bitmap, width.toInt(), height.toInt(), true)

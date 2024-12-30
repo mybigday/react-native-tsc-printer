@@ -28,7 +28,10 @@ RCT_EXPORT_MODULE()
     return self;
 }
 
-- (void)scanDevices:(double)timeout resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(scanDevices:(double)timeout
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     if (_centralManager.state != CBManagerStatePoweredOn) {
         reject(@"E_BLUETOOTH_OFF", @"Bluetooth is not powered on", nil);
         return;
@@ -37,7 +40,7 @@ RCT_EXPORT_MODULE()
     [_centralManager scanForPeripheralsWithServices:@[[CBUUID UUIDWithString:TSC_SERVICE_UUID]]
                                           options:@{CBCentralManagerScanOptionAllowDuplicatesKey: @NO}];
     
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, timeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t) timeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
         [self->_centralManager stopScan];
         NSMutableArray *devices = [NSMutableArray new];
         for (CBPeripheral *peripheral in self->_peripherals.allValues) {
@@ -50,7 +53,10 @@ RCT_EXPORT_MODULE()
     });
 }
 
-- (void)connect:(NSString *)target resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(connect:(NSString *)target
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:target];
     CBPeripheral *peripheral = [_centralManager retrievePeripheralsWithIdentifiers:@[uuid]].firstObject;
     
@@ -73,7 +79,10 @@ RCT_EXPORT_MODULE()
     });
 }
 
-- (void)disconnect:(NSInteger)deviceId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(disconnect:(double)deviceId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     CBPeripheral *peripheral = _peripherals[@(deviceId)];
     if (!peripheral) {
         reject(@"E_DEVICE_NOT_FOUND", @"Device not found", nil);
@@ -86,7 +95,11 @@ RCT_EXPORT_MODULE()
     resolve(nil);
 }
 
-- (void)send:(NSInteger)deviceId command:(NSString *)command resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(send:(double)deviceId
+                  command:(NSString *)command
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     CBPeripheral *peripheral = _peripherals[@(deviceId)];
     CBCharacteristic *characteristic = _characteristics[@(deviceId)];
     
@@ -100,7 +113,10 @@ RCT_EXPORT_MODULE()
     resolve(nil);
 }
 
-- (void)read:(NSInteger)deviceId resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(read:(double)deviceId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     CBPeripheral *peripheral = _peripherals[@(deviceId)];
     CBCharacteristic *characteristic = _characteristics[@(deviceId)];
     
@@ -187,10 +203,14 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - TurboModule
 
+#ifdef RCT_NEW_ARCH_ENABLED
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
     return std::make_shared<facebook::react::NativeTscBlueSpecJSI>(params);
 }
+
+#endif
 
 @end 

@@ -2,6 +2,7 @@ package com.tscprinter
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
@@ -24,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @ReactModule(name = TscUsbModule.NAME)
 class TscUsbModule(private val reactContext: ReactApplicationContext) :
-  NativeTscUsbSpec(reactContext) {
+  TscUsbSpec(reactContext) {
 
   private val nextId = AtomicInteger(0)
   private val devices = mutableMapOf<Int, UsbDevice>()
@@ -35,6 +36,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     return NAME
   }
 
+  @ReactMethod
   override fun scanDevices(timeout: Double, promise: Promise) {
     val usbManager = reactContext.getSystemService(Context.USB_SERVICE) as UsbManager
     val deviceList = usbManager.deviceList
@@ -62,6 +64,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     return null
   }
 
+  @ReactMethod
   override fun connect(target: String, promise: Promise) {
     Thread {
       try {
@@ -119,6 +122,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun disconnect(deviceId: Double, promise: Promise) {
     Thread {
       try {
@@ -132,6 +136,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun send(deviceId: Double, data: String, promise: Promise) {
     Thread {
       try {
@@ -153,6 +158,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun read(deviceId: Double, promise: Promise) {
     Thread {
       try {

@@ -2,6 +2,7 @@ package com.tscprinter
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.module.annotations.ReactModule
+import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 @ReactModule(name = TscBlueModule.NAME)
 class TscBlueModule(reactContext: ReactApplicationContext) :
-  NativeTscBlueSpec(reactContext) {
+  TscBlueSpec(reactContext) {
 
   private val nextId = AtomicInteger(0)
   private val devices = mutableMapOf<Int, BluetoothSocket>()
@@ -40,6 +41,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
     bluetoothAdapter = bluetoothManager.adapter
   }
 
+  @ReactMethod
   override fun scanDevices(timeout: Double, promise: Promise) {
     if (bluetoothAdapter == null) {
       promise.reject(Exception("Bluetooth adapter not found"))
@@ -80,6 +82,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun connect(target: String, promise: Promise) {
     if (bluetoothAdapter == null) {
       promise.reject(Exception("Bluetooth adapter not found"))
@@ -104,12 +107,14 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun disconnect(deviceId: Double, promise: Promise) {
     devices[deviceId.toInt()]?.close()
     devices.remove(deviceId.toInt())
     promise.resolve(null)
   }
 
+  @ReactMethod
   override fun send(deviceId: Double, command: String, promise: Promise) {
     Thread {
       try {
@@ -122,6 +127,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
     }.start()
   }
 
+  @ReactMethod
   override fun read(deviceId: Double, promise: Promise) {
     Thread {
       try {

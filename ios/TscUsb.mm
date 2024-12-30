@@ -53,7 +53,10 @@ RCT_EXPORT_MODULE()
     return -1;
 }
 
-- (void)scanDevices: (double)timeout resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(scanDevices:(double)timeout
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
     NSArray *accessories = [accessoryManager connectedAccessories];
     NSArray *filteredAccessories = [accessories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"vendorID == %@", @(0x1203)]];
@@ -68,7 +71,10 @@ RCT_EXPORT_MODULE()
     resolve(results);
 }
 
-- (void)connect: (NSString *)target resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(connect:(NSString *)target
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     EAAccessoryManager *accessoryManager = [EAAccessoryManager sharedAccessoryManager];
     NSArray *accessories = [accessoryManager connectedAccessories];
     NSArray *filteredAccessories = [accessories filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"serialNumber == %@", target]];
@@ -92,7 +98,10 @@ RCT_EXPORT_MODULE()
     resolve(@(deviceId));
 }
 
-- (void)disconnect: (NSInteger)deviceId resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(disconnect:(double)deviceId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     EASession *session = _sessions[@(deviceId)];
     if (!session) {
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
@@ -106,7 +115,11 @@ RCT_EXPORT_MODULE()
     resolve(nil);
 }
 
-- (void)send: (NSInteger)deviceId command: (NSString *)command resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(send:(double)deviceId
+                  command:(NSString *)command
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     EASession *session = _sessions[@(deviceId)];
     if (!session) {
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
@@ -122,7 +135,10 @@ RCT_EXPORT_MODULE()
     resolve(nil);
 }
 
-- (void)read: (NSInteger)deviceId resolver: (RCTPromiseResolveBlock)resolve rejecter: (RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(read:(double)deviceId
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
     EASession *session = _sessions[@(deviceId)];
     if (!session) {
         reject(@"E_SESSION_NOT_FOUND", @"Session not found", nil);
@@ -143,10 +159,16 @@ RCT_EXPORT_MODULE()
     resolve(base64Data);
 }
 
+#pragma mark - TurboModule
+
+#ifdef RCT_NEW_ARCH_ENABLED
+
 - (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
     (const facebook::react::ObjCTurboModule::InitParams &)params
 {
     return std::make_shared<facebook::react::NativeTscUsbSpecJSI>(params);
 }
+
+#endif
 
 @end

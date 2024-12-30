@@ -93,7 +93,7 @@ class Printer {
     }
   }
 
-  async receive(timeout: number = 100): Promise<string | Buffer> {
+  async receive(timeout: number = 1000): Promise<string | Buffer> {
     return new Promise((resolve, reject) => {
       const timeoutId = setTimeout(() => reject(new Error('Timeout')), timeout);
       (this._connection! as EventEmitter).once('data', (data) => {

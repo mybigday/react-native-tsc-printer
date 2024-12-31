@@ -9,7 +9,9 @@ import java.util.HashMap
 
 class TscPrinterPackage : BaseReactPackage() {
   override fun getModule(name: String, reactContext: ReactApplicationContext): NativeModule? {
-    return if (name == TscUsbModule.NAME) {
+    return if (name == TscCommonModule.NAME) {
+      TscCommonModule(reactContext)
+    } else if (name == TscUsbModule.NAME) {
       TscUsbModule(reactContext)
     } else if (name == TscBlueModule.NAME) {
       TscBlueModule(reactContext)

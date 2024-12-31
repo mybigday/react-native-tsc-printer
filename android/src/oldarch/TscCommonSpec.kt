@@ -7,5 +7,5 @@ import com.facebook.react.bridge.Promise
 abstract class TscCommonSpec internal constructor(context: ReactApplicationContext) :
   ReactContextBaseJavaModule(context) {
 
-  abstract fun loadImage(uri: String, width: Double, height: Double, promise: Promise)
+  abstract fun loadImage(uri: String, height: Double, promise: Promise)
 }

@@ -321,19 +321,18 @@ class Printer {
     x: number,
     y: number,
     uri: string,
-    width: number = 0,
-    height: number = 0
+    heightInDots: number = 0
   ): Promise<void> {
-    const data = await Common.loadImage(uri, width, height);
-    return this.addBitmap(x, y, width, height, new Uint8Array(data));
+    const { data, widthBytes } = await Common.loadImage(uri, heightInDots);
+    return this.addBitmap(x, y, widthBytes, heightInDots, new Uint8Array(data));
   }
 
   async addBitmap(
     x: number,
     y: number,
-    width: number,
-    height: number,
-    graystyleBitmap: Uint8Array
+    widthBytes: number,
+    heightInDots: number,
+    bitmap: Uint8Array
   ): Promise<void> {
     const mode = 0;
     return this.sendCommand(
@@ -341,10 +340,10 @@ class Printer {
         'BITMAP',
         x,
         y,
-        width,
-        height,
+        widthBytes,
+        heightInDots,
         mode,
-        Buffer.from(graystyleBitmap)
+        Buffer.from(bitmap)
       )
     );
   }

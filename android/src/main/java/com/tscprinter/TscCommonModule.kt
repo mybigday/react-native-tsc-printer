@@ -12,7 +12,14 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.Paint
+import android.util.Log
+import android.graphics.Color
 
+import java.nio.ByteBuffer
 import java.net.URL
 
 @ReactModule(name = TscCommonModule.NAME)
@@ -24,28 +31,65 @@ class TscCommonModule(reactContext: ReactApplicationContext) :
   }
 
   @ReactMethod
-  override fun loadImage(uri: String, width: Double, height: Double, promise: Promise) {
+  override fun loadImage(uri: String, height: Double, promise: Promise) {
     try {
       val url = URL(uri)
       val bitmap = BitmapFactory.decodeStream(url.openStream())
-      val resizedBitmap = if (width == 0.0 || height == 0.0) {
+      val aspectRatio = bitmap.width.toDouble() / bitmap.height.toDouble()
+      val width = aspectRatio * height
+      val resizedBitmap = if (height == 0.0 || height.toInt() == bitmap.height) {
         bitmap
       } else {
         Bitmap.createScaledBitmap(bitmap, width.toInt(), height.toInt(), true)
       }
-      val rawData = IntArray(resizedBitmap.width * resizedBitmap.height)
-      resizedBitmap.getPixels(rawData, 0, resizedBitmap.width, 0, 0, resizedBitmap.width, resizedBitmap.height)
-      val data = IntArray(rawData.size)
-      for (i in rawData.indices) {
-        val color = rawData[i]
-        val r = (color shr 16) and 0xFF
-        val g = (color shr 8) and 0xFF
-        val b = color and 0xFF
-        data[i] = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+      // bitmap to bytearray
+      val rowBytes = (resizedBitmap.width + 7) / 8
+      val pixels = IntArray(resizedBitmap.width * resizedBitmap.height)
+      resizedBitmap.getPixels(pixels, 0, resizedBitmap.width, 0, 0, resizedBitmap.width, resizedBitmap.height)
+      // result
+      val binaryArray = IntArray(resizedBitmap.height * rowBytes)
+      // convert grayscale to Binarization
+      var byteIndex = 0
+      var bitIndex = 0
+      for (y in 0 until resizedBitmap.height) {
+        for (x in 0 until resizedBitmap.width) {
+          val pixel = pixels[y * resizedBitmap.width + x]
+          val r = Color.red(pixel)
+          val g = Color.green(pixel)
+          val b = Color.blue(pixel)
+          val a = Color.alpha(pixel)
+          val gray = ((r * 76 + g * 150 + b * 29) shr 8) * a / 255
+
+          if (bitIndex == 0) {
+            binaryArray[byteIndex] = 0
+          }
+
+          if (gray < 128) {
+            binaryArray[byteIndex] = binaryArray[byteIndex] or (1 shl (7 - bitIndex))
+          }
+          
+          bitIndex++
+          if (bitIndex == 8) {
+            bitIndex = 0
+            byteIndex++
+          }
+        }
+        // Move to next byte at end of row if needed
+        if (bitIndex != 0) {
+          bitIndex = 0
+          byteIndex++
+        }
       }
-      promise.resolve(Arguments.fromArray(data))
+      val result = Arguments.createMap()
+      result.putInt("widthBytes", rowBytes)
+      result.putArray("data", Arguments.fromArray(binaryArray))
+
+      bitmap.recycle()
+      resizedBitmap.recycle()
+
+      promise.resolve(result)
     } catch (e: Exception) {
-      promise.reject(e)
+      promise.reject("E_LOAD_IMAGE", e.message, e)
     }
   }
 

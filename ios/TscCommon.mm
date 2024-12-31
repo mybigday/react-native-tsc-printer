@@ -5,7 +5,6 @@
 RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(loadImage:(NSString *)uri
-                  width:(double)width
                   height:(double)height
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
@@ -32,16 +31,13 @@ RCT_EXPORT_METHOD(loadImage:(NSString *)uri
                 return;
             }
 
-            // Resize image to target size
-            UIImage *resizedImage;
-            if (width == 0 || height == 0) {
-                resizedImage = image;
-            } else {
-                UIGraphicsBeginImageContext(CGSizeMake(width, height));
-                [image drawInRect:CGRectMake(0, 0, width, height)];
-                resizedImage = UIGraphicsGetImageFromCurrentImageContext();
-                UIGraphicsEndImageContext();
-            }
+            // Resize image if height is specified
+            CGFloat scale = height / image.size.height;
+            CGSize newSize = CGSizeMake(image.size.width * scale, height);
+            UIGraphicsBeginImageContextWithOptions(newSize, NO, 1.0);
+            [image drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
+            UIImage *resizedImage = UIGraphicsGetImageFromCurrentImageContext();
+            UIGraphicsEndImageContext();
 
             // Convert to grayscale bitmap
             CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceGray();
@@ -53,20 +49,45 @@ RCT_EXPORT_METHOD(loadImage:(NSString *)uri
                                                        colorSpace,
                                                        kCGImageAlphaNone);
             CGColorSpaceRelease(colorSpace);
-            
+
             CGContextDrawImage(context,
                              CGRectMake(0, 0, resizedImage.size.width, resizedImage.size.height),
                              resizedImage.CGImage);
+            // Get grayscale data
+            uint8_t *grayscaleData = CGBitmapContextGetData(context);
+            NSUInteger width = resizedImage.size.width;
+            NSUInteger height = resizedImage.size.height;
+            NSUInteger bytesPerRow = CGBitmapContextGetBytesPerRow(context);
             
-            NSData *bitmapData = [NSData dataWithBytes:CGBitmapContextGetData(context)
-                                              length:CGBitmapContextGetHeight(context) * CGBitmapContextGetBytesPerRow(context)];
+            // Calculate binary data size (8 pixels per byte)
+            NSUInteger binaryRowBytes = width / 8;
+            if (width % 8 != 0) binaryRowBytes++;
+            NSMutableArray *binaryArray = [NSMutableArray arrayWithCapacity:height * binaryRowBytes];
+            
+            // Convert to binary (8 pixels per byte)
+            for (NSUInteger y = 0; y < height; y++) {
+                for (NSUInteger byteX = 0; byteX < binaryRowBytes; byteX++) {
+                    uint8_t binaryByte = 0;
+                    
+                    for (NSUInteger bit = 0; bit < 8; bit++) {
+                        NSUInteger x = byteX * 8 + bit;
+                        if (x < width) {
+                            uint8_t gray = grayscaleData[y * bytesPerRow + x];
+                            if (gray < 128) {
+                                binaryByte |= (1 << (7 - bit));
+                            }
+                        }
+                    }
+                    [binaryArray addObject:@(binaryByte)];
+                }
+            }
+            
             CGContextRelease(context);
-
-            resolve(@[
-                @(resizedImage.size.width),
-                @(resizedImage.size.height),
-                bitmapData
-            ]);
+            
+            resolve(@{
+                @"widthBytes": @(binaryRowBytes),
+                @"data": binaryArray
+            });
         } @catch (NSException *exception) {
             reject(@"E_LOAD_IMAGE", exception.reason, nil);
         }

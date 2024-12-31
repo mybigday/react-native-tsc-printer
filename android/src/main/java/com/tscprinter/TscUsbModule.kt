@@ -117,7 +117,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
           promise.resolve(id)
         }
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_CONNECT", e.message, e)
       }
     }.start()
   }
@@ -131,7 +131,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
         devices.remove(deviceId.toInt())
         promise.resolve(null)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_DISCONNECT", e.message, e)
       }
     }.start()
   }
@@ -153,7 +153,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
         }
         promise.resolve(null)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_SEND", e.message, e)
       }
     }.start()
   }
@@ -175,7 +175,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
         }
         promise.resolve(Base64.encodeToString(buffer.copyOf(result), Base64.DEFAULT))
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_READ", e.message, e)
       }
     }.start()
   }

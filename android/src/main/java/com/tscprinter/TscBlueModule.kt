@@ -44,11 +44,11 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   override fun scanDevices(timeout: Double, promise: Promise) {
     if (bluetoothAdapter == null) {
-      promise.reject(Exception("Bluetooth adapter not found"))
+      promise.reject("E_SCAN", "Bluetooth adapter not found")
       return
     }
     if (!bluetoothAdapter.isEnabled) {
-      promise.reject(Exception("Bluetooth is not enabled"))
+      promise.reject("E_SCAN", "Bluetooth is not enabled")
       return
     }
     Thread {
@@ -68,7 +68,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
           }
 
           override fun onScanFailed(errorCode: Int) {
-            promise.reject(Exception("Scan failed, code: $errorCode"))
+            promise.reject("E_SCAN", "Scan failed, code: $errorCode")
           }
         }
 
@@ -77,7 +77,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
         bluetoothAdapter.bluetoothLeScanner.stopScan(leScanCallback)
         promise.resolve(results)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_SCAN", e.message, e)
       }
     }.start()
   }
@@ -85,11 +85,11 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
   @ReactMethod
   override fun connect(target: String, promise: Promise) {
     if (bluetoothAdapter == null) {
-      promise.reject(Exception("Bluetooth adapter not found"))
+      promise.reject("E_CONNECT", "Bluetooth adapter not found")
       return
     }
     if (!bluetoothAdapter.isEnabled) {
-      promise.reject(Exception("Bluetooth is not enabled"))
+      promise.reject("E_CONNECT", "Bluetooth is not enabled")
       return
     }
     Thread {
@@ -102,7 +102,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
         devices[id] = bluetoothSocket
         promise.resolve(id)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_CONNECT", e.message, e)
       }
     }.start()
   }
@@ -122,7 +122,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
         devices[deviceId.toInt()]?.outputStream?.write(bytes)
         promise.resolve(null)
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_SEND", e.message, e)
       }
     }.start()
   }
@@ -137,7 +137,7 @@ class TscBlueModule(reactContext: ReactApplicationContext) :
         val data = buffer.sliceArray(0 until bytesRead)
         promise.resolve(Base64.encodeToString(data, Base64.DEFAULT))
       } catch (e: Exception) {
-        promise.reject(e)
+        promise.reject("E_READ", e.message, e)
       }
     }.start()
   }

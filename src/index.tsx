@@ -218,14 +218,14 @@ class Printer {
   async addText(
     x: number,
     y: number,
-    content: string,
+    content: string | Buffer,
     {
       font = Font.MonotyeCG0,
       rotation = 0,
       magnification,
       alignment = TextAlignment.Default,
     }: {
-      font?: Font;
+      font?: Font | string;
       rotation?: number;
       magnification?: {
         x?: number;

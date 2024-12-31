@@ -23,4 +23,11 @@ export const buildCommand = (command: string, ...args: CommandArg[]) => {
   return Buffer.concat(buffers);
 };
 
-export const quote = (str: string) => `"${str.replace(/"/g, '""')}"`;
+export const quote = (str: string | Buffer): Buffer => {
+  if (typeof str === 'string') {
+    return Buffer.from(`"${str.replace(/"/g, '""')}"`);
+  }
+  const quote = Buffer.from('"');
+  // @ts-ignore TS2345
+  return Buffer.concat([quote, str, quote]);
+};

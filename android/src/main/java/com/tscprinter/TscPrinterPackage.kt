@@ -21,6 +21,15 @@ class TscPrinterPackage : BaseReactPackage() {
   override fun getReactModuleInfoProvider(): ReactModuleInfoProvider {
     return ReactModuleInfoProvider {
       val moduleInfos: MutableMap<String, ReactModuleInfo> = HashMap()
+      moduleInfos[TscCommonModule.NAME] = ReactModuleInfo(
+        TscCommonModule.NAME,
+        TscCommonModule.NAME,
+        false,  // canOverrideExistingModule
+        false,  // needsEagerInit
+        true,  // hasConstants
+        false,  // isCxxModule
+        true // isTurboModule
+      )
       moduleInfos[TscUsbModule.NAME] = ReactModuleInfo(
         TscUsbModule.NAME,
         TscUsbModule.NAME,

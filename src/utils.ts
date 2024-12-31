@@ -27,7 +27,7 @@ export const quote = (str: string | Buffer): Buffer => {
   if (typeof str === 'string') {
     return Buffer.from(`"${str.replace(/"/g, '""')}"`);
   }
-  const quote = Buffer.from('"');
+  const quoteBuf = Buffer.from('"');
   // @ts-ignore TS2345
-  return Buffer.concat([quote, str, quote]);
+  return Buffer.concat([quoteBuf, str, quoteBuf]);
 };

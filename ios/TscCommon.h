@@ -1,5 +1,5 @@
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "generated/RNTscPrinterSpec/RNTscPrinterSpec.h"
+#import "RNTscPrinterSpec.h"
 
 @interface TscCommon : NSObject <NativeTscCommonSpec>
 #else

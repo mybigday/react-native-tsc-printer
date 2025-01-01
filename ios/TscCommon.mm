@@ -54,7 +54,7 @@ RCT_EXPORT_METHOD(loadImage:(NSString *)uri
                              CGRectMake(0, 0, resizedImage.size.width, resizedImage.size.height),
                              resizedImage.CGImage);
             // Get grayscale data
-            uint8_t *grayscaleData = CGBitmapContextGetData(context);
+            char *grayscaleData = (char *)CGBitmapContextGetData(context);
             NSUInteger width = resizedImage.size.width;
             NSUInteger height = resizedImage.size.height;
             NSUInteger bytesPerRow = CGBitmapContextGetBytesPerRow(context);

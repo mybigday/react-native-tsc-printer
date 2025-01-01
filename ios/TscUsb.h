@@ -2,7 +2,7 @@
 #import <ExternalAccessory/ExternalAccessory.h>
 
 #ifdef RCT_NEW_ARCH_ENABLED
-#import "generated/RNTscPrinterSpec/RNTscPrinterSpec.h"
+#import "RNTscPrinterSpec.h"
 #import <React/RCTEventEmitter.h>
 
 @interface TscUsb : RCTEventEmitter <NativeTscUsbSpec, NSStreamDelegate>

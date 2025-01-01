@@ -91,9 +91,8 @@ android {
       if (isNewArchitectureEnabled()) {
         java.srcDirs += [
           "src/newarch",
-          // Codegen specs
-          "generated/java",
-          "generated/jni"
+          // This is needed to build Kotlin project with NewArch enabled
+          "${project.buildDir}/generated/source/codegen/java"
         ]
       } else {
         java.srcDirs += ["src/oldarch"]

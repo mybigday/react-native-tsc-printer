@@ -188,7 +188,13 @@
   "codegenConfig": {
     "name": "RNTscPrinterSpec",
     "type": "modules",
-    "jsSrcsDir": "src"
+    "jsSrcsDir": "src",
+    "outputDir": {
+      "android": "android/generated"
+    },
+    "android": {
+      "javaPackageName": "com.tscprinter"
+    }
   },
   "create-react-native-library": {
     "type": "module-mixed",

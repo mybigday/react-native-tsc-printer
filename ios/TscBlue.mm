@@ -23,15 +23,20 @@ RCT_EXPORT_MODULE()
         _nextId = 0;
         _peripherals = [NSMutableDictionary new];
         _characteristics = [NSMutableDictionary new];
-        _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
     }
     return self;
+}
+
+- (void)initCentralManager {
+    if (_centralManager) return;
+    _centralManager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
 }
 
 RCT_EXPORT_METHOD(scanDevices:(double)timeout
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+    [self initCentralManager];
     if (_centralManager.state != CBManagerStatePoweredOn) {
         reject(@"E_BLUETOOTH_OFF", @"Bluetooth is not powered on", nil);
         return;
@@ -57,6 +62,7 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject)
 {
+    [self initCentralManager];
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:target];
     CBPeripheral *peripheral = [_centralManager retrievePeripheralsWithIdentifiers:@[uuid]].firstObject;
     

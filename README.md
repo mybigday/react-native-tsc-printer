@@ -34,8 +34,31 @@ Add the following to your `Info.plist`:
 </array>
 ```
 
-## Usage
+## Enabling TSC USB Functionality
 
+The TSC USB functionality is conditionally compiled. You can enable it using one of the following methods:
+
+### Method 1: Environment Variable
+
+Set the `ENABLE_TSC_USB` environment variable to `1` before running pod install:
+
+```sh
+ENABLE_TSC_USB=1 pod install
+```
+
+### Method 2: Package.json Configuration
+
+Add the `tscUsbEnabled` property to your project's root `package.json` file:
+
+```json
+{
+  "name": "your-app",
+  "version": "1.0.0",
+  "tscUsbEnabled": true
+}
+```
+
+## Usage
 
 ```js
 import Printer, { ConnectionType } from 'react-native-tsc-printer';

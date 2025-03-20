@@ -19,6 +19,7 @@ class UsbConnection extends EventEmitter {
   private _usbDeviceDataListener: NativeEventSubscription;
 
   static async discover(timeout: number): Promise<UsbDevice[]> {
+    if (!UsbApi) throw new Error('The TSC USB is not enabled.');
     const devices = await UsbApi.scanDevices(timeout);
     return devices.map((device) => ({
       ...device,
@@ -54,18 +55,19 @@ class UsbConnection extends EventEmitter {
   }
 
   static async connect(target: string): Promise<UsbConnection> {
+    if (!UsbApi) throw new Error('The TSC USB is not enabled.');
     return new UsbConnection(await UsbApi.connect(target));
   }
 
   async disconnect(): Promise<void> {
-    await UsbApi.disconnect(this._id);
+    await UsbApi!.disconnect(this._id);
     this._usbDeviceAttachedListener.remove();
     this._usbDeviceDetachedListener.remove();
     this._usbDeviceDataListener.remove();
   }
 
   async send(data: Buffer): Promise<void> {
-    await UsbApi.send(this._id, data.toString('ascii'));
+    await UsbApi!.send(this._id, data.toString('ascii'));
   }
 }
 

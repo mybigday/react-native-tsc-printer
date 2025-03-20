@@ -1,3 +1,5 @@
+#if defined(ENABLE_TSC_USB)
+
 #import <Foundation/Foundation.h>
 #import <ExternalAccessory/ExternalAccessory.h>
 
@@ -14,3 +16,5 @@
 #endif
 
 @end
+
+#endif

@@ -1,5 +1,7 @@
 #import "TscUsb.h"
 
+#if defined(ENABLE_TSC_USB)
+
 static const NSInteger TSC_VENDOR_ID = 0x1203;
 static const NSInteger BUFFER_SIZE = 1024;
 
@@ -172,3 +174,5 @@ RCT_EXPORT_METHOD(read:(double)deviceId
 #endif
 
 @end
+
+#endif

@@ -1,7 +1,7 @@
 import type { NativeEventSubscription } from 'react-native';
 import type { Buffer } from 'buffer';
 import { EventEmitter } from 'tseep';
-import { getEventEmitter } from './EventEmitters';
+import { usbEventEmitter } from './EventEmitters';
 import UsbApi from './NativeTscUsb';
 import type { Device } from './types';
 import { ConnectionType } from './types';
@@ -30,8 +30,8 @@ class UsbConnection extends EventEmitter {
   private constructor(id: number) {
     super();
     this._id = id;
-    const emitter = getEventEmitter('usb');
-    this._usbDeviceAttachedListener = emitter.addListener(
+    if (!usbEventEmitter) throw new Error('The TSC USB is not enabled.');
+    this._usbDeviceAttachedListener = usbEventEmitter.addListener(
       'connected',
       (event) => {
         if (event.id === this._id) {
@@ -39,7 +39,7 @@ class UsbConnection extends EventEmitter {
         }
       }
     );
-    this._usbDeviceDetachedListener = emitter.addListener(
+    this._usbDeviceDetachedListener = usbEventEmitter.addListener(
       'disconnected',
       (event) => {
         if (event.id === this._id) {
@@ -47,11 +47,14 @@ class UsbConnection extends EventEmitter {
         }
       }
     );
-    this._usbDeviceDataListener = emitter.addListener('data', (event) => {
-      if (event.id === this._id) {
-        this.emit('data', event.data);
+    this._usbDeviceDataListener = usbEventEmitter.addListener(
+      'data',
+      (event) => {
+        if (event.id === this._id) {
+          this.emit('data', event.data);
+        }
       }
-    });
+    );
   }
 
   static async connect(target: string): Promise<UsbConnection> {

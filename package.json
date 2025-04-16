@@ -203,6 +203,7 @@
   },
   "dependencies": {
     "buffer": "^6.0.3",
+    "react-native-bluetooth-classic": "^1.73.0-rc.13",
     "tseep": "^1.3.1"
   }
 }

@@ -1,6 +1,8 @@
+import { Platform } from 'react-native';
 import net from 'react-native-tcp-socket';
+import BluetoothClassic from 'react-native-bluetooth-classic';
+import type { BluetoothDevice } from 'react-native-bluetooth-classic';
 import UsbConnection from './UsbConnection';
-import BlueConnection from './BlueConnection';
 import Common from './NativeTscCommon';
 import { BARCODE_DEFAULT_WIDE, STATUS_MAP } from './constants';
 import {
@@ -23,11 +25,11 @@ export * from './types';
 
 class Printer {
   private _type: ConnectionType;
-  private _connection: UsbConnection | net.Socket | BlueConnection;
+  private _connection: UsbConnection | net.Socket | BluetoothDevice;
 
   private constructor(
     type: ConnectionType,
-    connection: UsbConnection | net.Socket | BlueConnection
+    connection: UsbConnection | net.Socket | BluetoothDevice
   ) {
     this._type = type;
     this._connection = connection;
@@ -44,7 +46,29 @@ class Printer {
           devices.push(...(await UsbConnection.discover(timeout)));
           break;
         case ConnectionType.BLUETOOTH:
-          devices.push(...(await BlueConnection.discover(timeout)));
+          if (Platform.OS === 'android') {
+            setTimeout(() => {
+              BluetoothClassic.cancelDiscovery();
+            }, timeout);
+          } else {
+            console.warn(
+              'Bluetooth discovery is not supported on iOS. Only bonded devices will be listed.'
+            );
+          }
+          const btDevices =
+            Platform.OS === 'android'
+              ? await BluetoothClassic.startDiscovery()
+              : await BluetoothClassic.getBondedDevices();
+          devices.push(
+            ...btDevices
+              .filter((device) => device.type === 'CLASSIC')
+              .map((device) => ({
+                name: device.name,
+                address: device.address,
+                target: device.address,
+                type: ConnectionType.BLUETOOTH,
+              }))
+          );
           break;
         default:
           throw new Error('Unsupported connection type');
@@ -73,7 +97,18 @@ class Printer {
         });
       }
       case ConnectionType.BLUETOOTH: {
-        return new Printer(type, await BlueConnection.connect(target));
+        const available = await BluetoothClassic.isBluetoothAvailable();
+        if (!available) throw new Error('Bluetooth is not available');
+        const enabled = await BluetoothClassic.isBluetoothEnabled();
+        if (!enabled) throw new Error('Bluetooth is not enabled');
+        const pairedDevices = await BluetoothClassic.getBondedDevices();
+        let device = pairedDevices.find((dev) => dev.address === target);
+        if (!device && Platform.OS === 'ios')
+          throw new Error('The device is not paired');
+        if (!device) device = await BluetoothClassic.pairDevice(target);
+        if (!(await device.isConnected()))
+          await device.connect({ connectionType: 'rfcomm', delimiter: '\r\n' });
+        return new Printer(type, device);
       }
       default:
         throw new Error('Unsupported connection type');
@@ -89,19 +124,30 @@ class Printer {
         await (this._connection as net.Socket).destroy();
         break;
       case ConnectionType.BLUETOOTH:
-        await (this._connection as BlueConnection).disconnect();
+        await (this._connection as BluetoothDevice).disconnect();
         break;
     }
   }
 
   async receive(timeout: number = 1000): Promise<string | Buffer> {
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => reject(new Error('Timeout')), timeout);
-      (this._connection! as EventEmitter).once('data', (data) => {
-        clearTimeout(timeoutId);
-        resolve(data);
-      });
-    });
+    switch (this._type) {
+      case ConnectionType.USB:
+      case ConnectionType.NET:
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(
+            () => reject(new Error('Timeout')),
+            timeout
+          );
+          (this._connection! as EventEmitter).once('data', (data) => {
+            clearTimeout(timeoutId);
+            resolve(data);
+          });
+        });
+      case ConnectionType.BLUETOOTH:
+        return (await (this._connection as BluetoothDevice).read()) as string;
+      default:
+        throw new Error('Unsupported connection type');
+    }
   }
 
   async sendCommand(command: string | Buffer): Promise<void> {
@@ -120,7 +166,7 @@ class Printer {
           });
         });
       case ConnectionType.BLUETOOTH:
-        await (this._connection as BlueConnection).send(command);
+        await (this._connection as BluetoothDevice).write(command, 'binary');
         break;
       default:
     }

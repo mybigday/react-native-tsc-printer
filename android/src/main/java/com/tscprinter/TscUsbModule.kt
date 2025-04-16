@@ -43,7 +43,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
     val list = Arguments.createArray()
     
     deviceList.values.forEach { device ->
-      if (device.vendorId == 0x0502) {
+      if (device.vendorId == 0x1203) {
         val eventData = Arguments.createMap()
         eventData.putString("name", device.productName)
         eventData.putInt("id", device.deviceId)

@@ -39,9 +39,9 @@ Pod::Spec.new do |s|
   s.compiler_flags = tsc_compiler_flags
 
   if tsc_usb_enabled
-    s.frameworks = "CoreBluetooth", "UIKit", "ExternalAccessory"
+    s.frameworks = "UIKit", "ExternalAccessory"
   else
-    s.frameworks = "CoreBluetooth", "UIKit"
+    s.frameworks = "UIKit"
   end
 
   s.pod_target_xcconfig = {

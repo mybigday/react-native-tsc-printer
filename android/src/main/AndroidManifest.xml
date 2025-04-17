@@ -1,3 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.tscprinter">
+
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
+    <uses-permission android:name="android.permission.USB_DEVICE_ATTACHED" />
+    <uses-permission android:name="android.permission.USB_DEVICE_DETACHED" />
+
+    <uses-feature android:name="android.hardware.usb.host" />
+
 </manifest>

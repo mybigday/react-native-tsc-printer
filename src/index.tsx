@@ -95,13 +95,23 @@ class Printer {
   }
 
   async receive(timeout: number = 1000): Promise<string | Buffer> {
-    return new Promise((resolve, reject) => {
-      const timeoutId = setTimeout(() => reject(new Error('Timeout')), timeout);
-      (this._connection! as EventEmitter).once('data', (data) => {
-        clearTimeout(timeoutId);
-        resolve(data);
-      });
-    });
+    switch (this._type) {
+      case ConnectionType.USB:
+        return await (this._connection as UsbConnection).read();
+      case ConnectionType.NET:
+      case ConnectionType.BLUETOOTH:
+      default:
+        return new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(
+            () => reject(new Error('Timeout')),
+            timeout
+          );
+          (this._connection! as EventEmitter).once('data', (data) => {
+            clearTimeout(timeoutId);
+            resolve(data);
+          });
+        });
+    }
   }
 
   async sendCommand(command: string | Buffer): Promise<void> {

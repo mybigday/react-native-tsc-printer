@@ -10555,6 +10555,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-bluetooth-classic@npm:^1.73.0-rc.13":
+  version: 1.73.0-rc.13
+  resolution: "react-native-bluetooth-classic@npm:1.73.0-rc.13"
+  dependencies:
+    buffer: ^6.0.3
+  peerDependencies:
+    react-native: ">=0.73.1"
+  checksum: 6ea62f2c2845f90a08e55a8317ba2e64c3319fcbb1908e06a8b7f670cf90c097c0cba44ff04d7b6508f9c1817adf5f0de27c0610556ccc64e4966c4d5976fc64
+  languageName: node
+  linkType: hard
+
 "react-native-builder-bob@npm:^0.32.0":
   version: 0.32.1
   resolution: "react-native-builder-bob@npm:0.32.1"
@@ -10646,6 +10657,7 @@ __metadata:
     "@react-native/typescript-config": 0.76.5
     react: 18.3.1
     react-native: 0.76.5
+    react-native-bluetooth-classic: ^1.73.0-rc.13
     react-native-builder-bob: ^0.32.0
     react-native-tcp-socket: ^6.2.0
   languageName: unknown
@@ -10673,6 +10685,7 @@ __metadata:
     prettier: ^3.0.3
     react: 18.3.1
     react-native: 0.76.5
+    react-native-bluetooth-classic: ^1.73.0-rc.13
     react-native-builder-bob: ^0.35.2
     react-native-tcp-socket: ^6.2.0
     release-it: ^17.11.0
@@ -10682,6 +10695,7 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
+    react-native-bluetooth-classic: "*"
     react-native-tcp-socket: "*"
   languageName: unknown
   linkType: soft

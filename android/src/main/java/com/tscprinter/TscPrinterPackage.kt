@@ -13,8 +13,6 @@ class TscPrinterPackage : BaseReactPackage() {
       TscCommonModule(reactContext)
     } else if (name == TscUsbModule.NAME) {
       TscUsbModule(reactContext)
-    } else if (name == TscBlueModule.NAME) {
-      TscBlueModule(reactContext)
     } else {
       null
     }
@@ -35,15 +33,6 @@ class TscPrinterPackage : BaseReactPackage() {
       moduleInfos[TscUsbModule.NAME] = ReactModuleInfo(
         TscUsbModule.NAME,
         TscUsbModule.NAME,
-        false,  // canOverrideExistingModule
-        false,  // needsEagerInit
-        true,  // hasConstants
-        false,  // isCxxModule
-        true // isTurboModule
-      )
-      moduleInfos[TscBlueModule.NAME] = ReactModuleInfo(
-        TscBlueModule.NAME,
-        TscBlueModule.NAME,
         false,  // canOverrideExistingModule
         false,  // needsEagerInit
         true,  // hasConstants

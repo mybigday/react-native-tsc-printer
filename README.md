@@ -13,10 +13,32 @@ npm install react-native-tsc-printer
 Add the following to your `AndroidManifest.xml`:
 
 ```xml
+<!-- For Bluetooth connection -->
+
 <uses-permission android:name="android.permission.BLUETOOTH"/>
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
+
+<!-- For USB connection -->
+
+<uses-permission android:name="android.permission.USB_PERMISSION" />
+<uses-feature android:name="android.hardware.usb.host" />
+
+<intent-filter>
+    <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+</intent-filter>
+<meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+    android:resource="@xml/device_filter" />
+```
+
+Add `android/src/main/res/xml//device_filter.xml`
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <usb-device vendor-id="1203" />
+</resources>
 ```
 
 ## iOS

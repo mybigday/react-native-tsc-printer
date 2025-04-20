@@ -1,5 +1,5 @@
 import type { NativeEventSubscription } from 'react-native';
-import type { Buffer } from 'buffer';
+import { Buffer } from 'buffer';
 import { EventEmitter } from 'tseep';
 import { usbEventEmitter } from './EventEmitters';
 import UsbApi from './NativeTscUsb';
@@ -70,7 +70,11 @@ class UsbConnection extends EventEmitter {
   }
 
   async send(data: Buffer): Promise<void> {
-    await UsbApi!.send(this._id, data.toString('ascii'));
+    await UsbApi!.send(this._id, data.toString('base64'));
+  }
+
+  async read(): Promise<Buffer> {
+    return Buffer.from(await UsbApi!.read(this._id), 'base64');
   }
 }
 

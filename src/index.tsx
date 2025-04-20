@@ -132,6 +132,9 @@ class Printer {
   async receive(timeout: number = 1000): Promise<string | Buffer> {
     switch (this._type) {
       case ConnectionType.USB:
+        return await (this._connection as UsbConnection).read();
+      case ConnectionType.BLUETOOTH:
+        return (await (this._connection as BluetoothDevice).read()) as string;
       case ConnectionType.NET:
         return new Promise((resolve, reject) => {
           const timeoutId = setTimeout(
@@ -143,8 +146,6 @@ class Printer {
             resolve(data);
           });
         });
-      case ConnectionType.BLUETOOTH:
-        return (await (this._connection as BluetoothDevice).read()) as string;
       default:
         throw new Error('Unsupported connection type');
     }

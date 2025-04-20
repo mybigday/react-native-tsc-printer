@@ -70,7 +70,7 @@ class TscUsbModule(private val reactContext: ReactApplicationContext) :
       try {
         val context = reactContext
         val usbManager = context.getSystemService(Context.USB_SERVICE) as UsbManager
-        val device = usbManager.deviceList.values.firstOrNull { it.deviceName == target }
+        val device = usbManager.deviceList.values.firstOrNull { it.serialNumber == target }
           ?: throw Exception("Device not found")
 
         if (!usbManager.hasPermission(device)) {

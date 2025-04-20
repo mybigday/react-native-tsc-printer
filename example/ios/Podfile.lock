@@ -1243,10 +1243,12 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-bluetooth-classic (1.73.0-rc.13):
+    - React
   - react-native-tcp-socket (6.2.0):
     - CocoaAsyncSocket
     - React-Core
-  - react-native-tsc-printer (0.1.0-beta.5):
+  - react-native-tsc-printer (0.1.0-beta.9):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1575,6 +1577,7 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-bluetooth-classic (from `../node_modules/react-native-bluetooth-classic`)
   - react-native-tcp-socket (from `../node_modules/react-native-tcp-socket`)
   - react-native-tsc-printer (from `../..`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
@@ -1683,6 +1686,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-bluetooth-classic:
+    :path: "../node_modules/react-native-bluetooth-classic"
   react-native-tcp-socket:
     :path: "../node_modules/react-native-tcp-socket"
   react-native-tsc-printer:
@@ -1781,8 +1786,9 @@ SPEC CHECKSUMS:
   React-logger: 697873f06b8ba436e3cddf28018ab4741e8071b6
   React-Mapbuffer: c174e11bdea12dce07df8669d6c0dc97eb0c7706
   React-microtasksnativemodule: 4c4eb6c6b6a33765ca9242e4efffb249700ea0df
+  react-native-bluetooth-classic: 7df08f0f02bbd45c9568e5da3a92d9a90c952952
   react-native-tcp-socket: 8c3e8bef909ab06c557eeb95363fe029391ff09d
-  react-native-tsc-printer: 3b4fca375fcf9b51993bdfb7eb407936e3ce9513
+  react-native-tsc-printer: 3ca0389f6812c2929e7d069f2625e6b4bce350a9
   React-nativeconfig: f7ab6c152e780b99a8c17448f2d99cf5f69a2311
   React-NativeModulesApple: 70600f7edfc2c2a01e39ab13a20fd59f4c60df0b
   React-perflogger: ceb97dd4e5ca6ff20eebb5a6f9e00312dcdea872
@@ -1811,7 +1817,7 @@ SPEC CHECKSUMS:
   ReactCodegen: daa13d9e48c9bdb1daac4bd694b9dd54e06681df
   ReactCommon: a6b87a7591591f7a52d9c0fec3aa05e0620d5dd3
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  Yoga: fcc198acd4a55599b3468cfb6ebc526baff5f06e
+  Yoga: c7ea4c36c1d78ebbf45529b6e78283e4e0fe4956
 
 PODFILE CHECKSUM: d8ae10fe8464b0b879ee95f80fea6b21df1505c9
 

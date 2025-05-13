@@ -1,6 +1,6 @@
 {
   "name": "react-native-tsc-printer",
-  "version": "0.1.0-beta.11",
+  "version": "0.1.0",
   "description": "TSC printer module for React Native",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",
